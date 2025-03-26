@@ -10,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -53,7 +51,9 @@ public class TweetController {
     @DeleteMapping("{username}/delete/{id}")
     public ResponseEntity<?> deleteTweet(@PathVariable("username") String username,@PathVariable("id") String id){
         tweetRepository.deleteById(id);
-        return new ResponseEntity<>("Tweet Deleted Successfully",HttpStatus.OK);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Tweet Deleted Successfully");
+        return ResponseEntity.ok(response);
     }
 
 
