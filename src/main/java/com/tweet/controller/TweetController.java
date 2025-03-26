@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -58,9 +61,23 @@ public class TweetController {
     public ResponseEntity<?> likeTweet(@PathVariable("username") String username,@PathVariable("id") String id){
         Optional<TweetEntity> tweetEntity= tweetRepository.findById(id);
         if (tweetEntity.isEmpty()) return new ResponseEntity<>("Tweet Not Found",HttpStatus.NOT_FOUND);
-        TweetEntity tweetModel1=tweetEntity.get();
-        tweetModel1.getLikes().add(username);
-        return new ResponseEntity<>(tweetRepository.save(tweetModel1),HttpStatus.OK);
+        TweetEntity tweetModel=tweetEntity.get();
+        if (tweetModel.getLikes().contains(username)) {
+            tweetModel.getLikes().remove(username); // Unlike
+        } else {
+            tweetModel.getLikes().add(username); // Like
+        }
+        return new ResponseEntity<>(tweetRepository.save(tweetModel),HttpStatus.OK);
+    }
+
+    @GetMapping("{username}/liked-tweets")
+    public ResponseEntity<?> getLikedTweets(@PathVariable("username") String username) {
+        List<String> likedTweetIds = tweetRepository.findAll().stream()
+                .filter(tweet -> tweet.getLikes().contains(username))
+                .map(TweetEntity::getTweetId)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(likedTweetIds, HttpStatus.OK);
     }
 
 
