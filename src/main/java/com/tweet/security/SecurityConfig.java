@@ -47,7 +47,7 @@ public class SecurityConfig {
                     }
                 }))
                 .authorizeHttpRequests((requests)-> requests
-                        .requestMatchers("/login","/register","/actuator/**","/swagger-ui/**","/v3/api-docs/**").permitAll()
+                        .requestMatchers("/login","/register","/**/forgot","/actuator/**","/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(eh->eh.authenticationEntryPoint(jwtAuthEntryPoint))
